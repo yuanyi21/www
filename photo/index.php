@@ -35,7 +35,7 @@ function outputImage($linkUrl, $imageUrl, $caption)
 {
   echo "<figure>";
   echo "<a href=\"$linkUrl\">";
-  echo "<img src=\"$imageUrl\" alt=\"$caption\" class=\"grow\">";
+  echo "<img src=\"$imageUrl\" alt=\"$caption\" border=\"0\" class=\"grow\">";
   echo "</a>\n";
   echo "<figcaption>$caption</figcaption>";
   echo "</figure>\n";

@@ -3,7 +3,9 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <link href="photo.css" rel="stylesheet" type="text/css"/>
+    <script src="jquery.js"></script>
     <script language="javascript" type="text/javascript">
+      var c_MaxImageSize = 1600;
       var images = new Array();
       var current = 0;
       function Image(url, ratio, caption, exifModel, exifAperture, exifExposure, exifFocal, exifISO, exifDate)
@@ -17,32 +19,61 @@
         this.exifFocal = eval(exifFocal) + "mm";
         this.exifISO = exifISO;
         this.exifDate = exifDate;
+        
+        // another
       }
     
+      function setImageSize(imageData)
+      {
+        var imgMaxWidth = Math.min($("#left-section").width() - 40, c_MaxImageSize);
+        var imgMaxHeight = Math.min(window.innerHeight - 150, c_MaxImageSize);
+
+        var containerRatio = imgMaxWidth / imgMaxHeight;
+        var imageW;
+
+        if (imageData.ratio > containerRatio)
+        {
+          imageW = imgMaxWidth;
+          $("#image").width(imgMaxWidth);
+          $("#image").height("auto");
+        }
+        else
+        {
+          imageW = imgMaxHeight * imageData.ratio;
+          $("#image").width("auto");
+          $("#image").height(imgMaxHeight);
+        }
+        
+        var margin = ($("#left-section").width() - imageW - 32) / 2;
+        $("#media-div").css("marginLeft", margin + "px");
+      }
+      
       function setMedia(index)
       {
         current = index;
         if (images[index].url.toLowerCase().indexOf(".jpg") > 0)
         {
-          image.src = images[index].url;
-          image.style.display = "block";
+          $("#image").attr("src", images[index].url);
+          setImageSize(images[index]);
+
+          $("#image").show();
           video.pause();
-          video.style.display = "none";
+          $("#video").hide();
         }
         else
         {
-          video.src = images[index].url;
-          image.style.display = "none";
-          video.style.display = "block";
+          $("#video").attr("src", images[index].url);
+          $("#image").hide();
+          $("#video").show();
         }
 
-        captionText.innerText = images[index].caption;
-        document.getElementById("Exif-Model").innerText = images[index].exifModel;
-        document.getElementById("Exif-Aperture").innerText = images[index].exifAperture;
-        document.getElementById("Exif-Exposure").innerText = images[index].exifExposure;
-        document.getElementById("Exif-Focal").innerText = images[index].exifFocal;
-        document.getElementById("Exif-ISO").innerText = images[index].exifISO;
-        document.getElementById("Exif-Date").innerText = images[index].exifDate;
+        $("#captionText").text(images[index].caption);
+        $("#Exif-Model").text(images[index].exifModel);
+        $("#Exif-Aperture").text(images[index].exifAperture);
+        $("#Exif-Exposure").text(images[index].exifExposure);
+        $("#Exif-Focal").text(images[index].exifFocal);
+        $("#Exif-ISO").text(images[index].exifISO);
+        $("#Exif-Date").text(images[index].exifDate);
       };
       
       function goPrev()
@@ -66,18 +97,16 @@
 
       function slideShowStart()
       {
-        var divSlide = document.getElementById("slide");
-        divWidth = divSlide.clientWidth;
-        divHeight = divSlide.clientHeight;
-        divSlide.style.visibility = "visible";
+        divWidth = $("#slide").width();
+        divHeight = $("#slide").height();
+        $("#slide").show();
         animate();
       }
 
       function slideShowStop()
       {
         window.clearTimeout(timeoutId);
-        var divSlide = document.getElementById("slide");
-        divSlide.style.visibility = "hidden";
+        $("#slide").hide();
       }
 
 <?php
@@ -205,87 +234,76 @@ foreach ($files as $name => $properties)
   $i++;
 }
 ?>
-      var imageNum = 0;
+      var slideIndex = 0;
 
       function animate() 
       {
-        //$("#dissolve").addClass("active");
-        //window.setTimeout(transition, 1000);
-        nextSlide();
+        transition();
+        //nontransition();
         timeoutId = window.setTimeout(animate, 3500);
       }
-
-      function nextSlide() 
+      
+      function setSlideSize(element)
       {
-        var imgMaxWidth = Math.min(divWidth - 50, 1600);
-        var imgMaxHeight = Math.min(divHeight - 50, 1600);
+        var imgMaxWidth = Math.min(divWidth - 20, c_MaxImageSize);
+        var imgMaxHeight = Math.min(divHeight - 20, c_MaxImageSize);
         var divRatio = imgMaxWidth / imgMaxHeight;
             
         var imgWidth, imgHeight;
-        if (images[imageNum].ratio > divRatio)
+        if (images[slideIndex].ratio > divRatio)
         {
           imgWidth = imgMaxWidth;
-          imgHeight = imgMaxWidth / images[imageNum].ratio;
+          imgHeight = imgMaxWidth / images[slideIndex].ratio;
         }
         else
         {
-          imgWidth = imgMaxHeight * images[imageNum].ratio;
+          imgWidth = imgMaxHeight * images[slideIndex].ratio;
           imgHeight = imgMaxHeight;
         }
             
-        var divMarginLR = (divWidth - imgWidth - 30) / 2;
-        var margin = "10px " + divMarginLR + "px";
+        var divMarginLR = (divWidth - imgWidth) / 2;
 
-        var divElement = document.getElementById("dissolve");
-        divElement.style.width = imgWidth + "px";
-        divElement.style.height = imgHeight + "px";
-        divElement.style.margin = margin;
-            
-        var imgElement = document.getElementById("outgoing");
-        imgElement.src = images[imageNum].url;
+        element.width(imgWidth);
+        element.height(imgHeight);
+        element.css("marginLeft", divMarginLR);
+      }
+      
+      function getNextSlide()
+      {
         do
         {
-          imageNum = (imageNum + 1) % images.length;
-        } while (images[imageNum].url.toLowerCase().indexOf(".jpg") < 0);
+          slideIndex = (slideIndex + 1) % images.length;
+        } while (images[slideIndex].url.toLowerCase().indexOf(".jpg") < 0);
+      }
+
+      function nontransition() 
+      {
+        setSlideSize($("#outgoing"));
+        $("#outgoing").attr("src", images[slideIndex].url);
+        getNextSlide();
       }
 
       function transition() 
       {
-        divRatio = divWidth / divHeight;
-        $("#dissolve .outgoing img").attr("src", images[imageNum].url);
-        if (images[imageNum].ratio > divRatio)
-        {
-          $("#dissolve .outgoing img").attr("width", divWidth);
-          $("#dissolve .outgoing img").attr("height", divWidth / images[imageNum].ratio);
-        }
-        else
-        {
-          $("#dissolve .outgoing img").attr("height", divHeight);
-          $("#dissolve .outgoing img").attr("width", divHeight * images[imageNum].ratio);
-        }
-        $("#dissolve").removeClass("active");
-        if (imageNum == images.length - 1) {
-            imageNum = 0;
-        } else {
-            imageNum++;
-        }
-        $("#dissolve .incoming img").attr("src", images[imageNum].url);
-        if (images[imageNum].ratio > divRatio)
-        {
-          $("#dissolve .incoming img").attr("width", divWidth);
-          $("#dissolve .incoming img").attr("height", divWidth / images[imageNum].ratio);
-        }
-        else
-        {
-          $("#dissolve .incoming img").attr("height", divHeight);
-          $("#dissolve .incoming img").attr("width", divHeight * images[imageNum].ratio);
-        }
+        //$("#incoming").fadeIn();
+        //$("#dissolve").addClass("active");
+        
+        $("#outgoing").attr("src", images[slideIndex].url);
+        setSlideSize($("#outgoing"));
+        //$("#outgoing").fadeIn();
+
+        //$("#dissolve").removeClass("active");
+
+        getNextSlide();
+        
+        $("#incoming").attr("src", images[slideIndex].url);
+        setSlideSize($("#incoming"));
       }
     </script>
   </head>
 
 <body>
-  <table id="container">
+  <table id="container" width="95%">
     <tr>
       <td class="header">
 <?php  
@@ -298,8 +316,8 @@ echo "        <a href='index.php'>home</a> / <a href='index.php?kid=$kid'>$kid</
     </tr>
     <tr><td colspan="2"><hr/></td></tr>
     <tr>
-      <td id="left-section">
-        <table>
+      <td id="left-section" width="90%">
+        <table width="100%">
           <tr>
             <td>
               <a href="#" class="prev" onclick="goPrev()">Prev</a>
@@ -378,8 +396,8 @@ if (hasTr)
   </table>
   <div id="slide">
     <div id="dissolve">
-      <div class="incoming"><img id="incoming"/></div>
-      <div id="outgoingDiv" class="outgoing"><img id="outgoing" width="100%"/></div>
+      <img id="incoming" class="incoming"/>
+      <img id="outgoing" class="outgoing"/>
     </div>
     <div style="float:right; margin: 10px;"><a href="#" onclick="slideShowStop()"> Close </a></div>
   </div>
