@@ -1,0 +1,194 @@
+﻿body
+{
+    font-family: 'Lucida Grande' , 'Lucida Sans Unicode' , Arial, Verdana, sans-serif;
+}
+
+a:hover 
+{
+    text-decoration: underline;
+}
+
+a:link, a:visited, a:active 
+{
+    text-decoration: none;
+}
+
+.header
+{
+    font-size: 18px;
+    line-height: 1.5em;
+}
+
+#container
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figure
+{
+    display: inline-block;
+}
+
+/* Media div */
+#media-div
+{
+    padding: 1em;
+}
+
+.drop-shadow
+{
+    position: relative;
+    float: left;
+    background: #fff;
+    -webkit-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+
+.drop-shadow:before, .drop-shadow:after
+{
+    content: "";
+    position: absolute;
+    z-index: -2;
+}
+
+#image
+{
+    width: 800px;
+}
+
+#video
+{
+    width: 640px;
+    display: none;
+}
+
+#captionText
+{
+    text-align: center;
+    margin: 2px;
+}
+
+#left-section
+{
+    width: 854px;
+    margin: 2px 20px 0px 2px;
+    vertical-align: top;
+}
+
+#right-section
+{
+    vertical-align: top;
+}
+
+/* Thumbnail table */
+#thumbnail-table
+{
+    border: 0px;
+}
+
+#thumbnail-table div
+{
+    width: 75px;
+    height: 75px;
+    overflow: hidden;
+}
+
+img.thumbnail-landscape
+{
+    height: 100%;
+}
+
+img.thumbnail-portrait
+{
+    width: 100%;
+}
+
+.grow:hover
+{
+    -ms-transform: scale(1.15) translateX(0px) translateY(0px);
+    -ms-transition-duration: .2s;
+    -webkit-transform: scale3d(1.15, 1.15, 1) translateX(0px) translateY(0px) translateZ(1001px);
+    -webkit-transition-duration: .2s;
+    -moz-transform: scale(1.15) translateX(0px) translateY(0px);
+    -moz-transition-duration: .2s;
+}
+
+#exif-table td
+{
+    font-size: 14px;
+    padding: 1px;
+}
+
+#exif-table .exifName
+{
+    background-color: #aaa;
+}
+
+#exif-table .exifValue
+{
+    background-color: #ccc;
+}
+
+#left-section .prev
+{
+    background: url("arrowl.png") no-repeat 0px 50%;
+    color: rgb(102, 102, 102);
+    padding-left: 14px;
+    float:left;
+}
+
+#left-section .next
+{
+    background: url("arrowr.png") no-repeat 100% 50%;
+    color: rgb(102, 102, 102);
+    padding-right: 14px;
+    float:right;
+}
+
+#slide
+{
+    background: #888; 
+    visibility: hidden; 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    display: block; 
+    width: 100%; 
+    height: 100%;
+	overflow: hidden;
+}
+
+
+/*////////////////////////////////////////////////////////////*/
+
+
+/* CROSS-FADE */
+#slide #dissolve {
+	position: absolute;
+	background-color: White;
+	padding: 15px;
+}
+#slide #dissolve .incoming {
+	position: absolute;
+	opacity: 0;
+	overflow: hidden;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-duration: 1s;
+}
+#slide #dissolve.active .incoming {
+	opacity: 0;
+	z-index: 2;
+	/*-webkit-animation-name: dissolve;*/
+}
+#slide #dissolve.active .outgoing {
+	opacity: 1;
+	z-index: 0;
+}
+@-webkit-keyframes dissolve {
+	0% { opacity: 0; }
+	1% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
